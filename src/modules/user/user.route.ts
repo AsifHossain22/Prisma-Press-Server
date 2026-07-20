@@ -1,52 +1,63 @@
-import { Router } from "express";
-import { Role } from "../../../generated/prisma/enums";
-import { auth } from "../../middlewares/auth";
-import { userController } from "./user.controller";
+import { Router } from 'express';
+import { userController } from './user.controller';
+import { Role } from '../../../generated/prisma/enums';
+import { auth } from '../../middleware/auth';
 
 const router = Router();
 
-router.post("/register", userController.registerUser )
+// UserRegister
+router.post('/register', userController.registerUser);
 
-router.get("/me",
-    
-//     (req: Request, res: Response, next : NextFunction) => {
-//     console.log(req.cookies);
-//     const {accessToken} = req.cookies;
-//         console.log(accessToken);
-    
-//         const verifiedToken = jwtUtils.verifyToken(accessToken, config.jwt_access_secret);
+// UserProfile
+router.get(
+  '/me',
+  // (req: Request, res: Response, next: NextFunction) => {
+  //   console.log(req.cookies);
 
-//         if(!verifiedToken.success){
-//             throw new Error(verifiedToken.error);
-//         }
-  
-//     const { email, name, id, role } = verifiedToken.data as JwtPayload;
+  //   const { accessToken } = req.cookies;
+  //   console.log(accessToken);
 
-//     // const requiredRoles = ["ADMIN", "USER", "AUTHOR"];
-//     const requiredRoles = [Role.ADMIN, Role.USER, Role.AUTHOR];
+  //   const verifiedToken = jwtUtils.verifyToken(
+  //     accessToken,
+  //     config.jwt_access_secret,
+  //   );
 
-//     if(!requiredRoles.includes(role)){
-//         return res.status(403).json({
-//             success: false,
-//             statusCode: httpStatus.FORBIDDEN,
-//             message: "Forbidden. You don't have permission to access this resource."
-//         })
-//     }
+  //   if (!verifiedToken.success) {
+  //     throw new Error(verifiedToken.error);
+  //   }
 
-//     req.user = {
-//         email,
-//         name,
-//         id,
-//         role
-//     };
-//     next();
-// }, 
+  //   const { email, name, id, role } = verifiedToken.data as JwtPayload;
 
-auth(Role.ADMIN, Role.USER, Role.AUTHOR),
+  //   // const requiredRoles = ["ADMIN", "USER", "AUTHOR"];
+  //   const requiredRoles = [Role.ADMIN, Role.USER, Role.AUTHOR];
 
-userController.getMyProfile);
+  //   if (!requiredRoles.includes(role)) {
+  //     return res.status(403).json({
+  //       success: false,
+  //       statusCode: httpStatus.FORBIDDEN,
+  //       message:
+  //         "Forbidden. You don't have permission to access this resource!",
+  //     });
+  //   }
 
+  //   req.user = {
+  //     id,
+  //     name,
+  //     email,
+  //     role,
+  //   };
 
-router.put("/my-profile", auth(Role.ADMIN, Role.USER, Role.AUTHOR), userController.updateMyProfile);
+  //   next();
+  // },
+
+  auth(Role.ADMIN, Role.AUTHOR, Role.USER),
+  userController.getMyProfile,
+);
+
+router.put(
+  '/my-profile',
+  auth(Role.ADMIN, Role.AUTHOR, Role.USER),
+  userController.updateMyProfile,
+);
 
 export const userRoutes = router;
