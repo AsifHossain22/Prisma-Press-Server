@@ -1,100 +1,106 @@
-import { NextFunction, Request, Response } from "express";
-import httpStatus from "http-status";
-import { catchAsync } from "../../utils/catchAsync";
-import { sendResponse } from "../../utils/sendResponse";
-import { userService } from "./user.service";
+import { NextFunction, Request, Response } from 'express';
+import httpStatus from 'http-status';
+import { userService } from './user.service';
+import { catchAsync } from '../../utils/catchAsync';
+import { sendResponse } from '../../utils/sendResponse';
 
-
-
+// RegisterUser
 // const registerUser = async (req: Request, res: Response) => {
-//     try {
-//         const payload = req.body;
+//   try {
+//     const payload = req.body;
+//     // console.log(payload);
 
-//         const user = await userService.registerUserIntoDB(payload);
+//     const user = await userService.registerIntoDB(payload);
 
-//         res.status(httpStatus.CREATED).json({
-//             success: true,
-//             statusCode: httpStatus.CREATED,
-//             message: "User registered successfully",
-//             data: {
-//                 user
-//             }
-//         });
-//     } catch (error) {
-//         console.log(error);
+//     // res.status(httpStatus.CREATED).json({
+//     //   success: true,
+//     //   statusCode: httpStatus.CREATED,
+//     //   message: 'User registered successfully!',
+//     //   data: { user },
+//     // });
 
-//         res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-//             success: false,
-//             statusCode: httpStatus.INTERNAL_SERVER_ERROR,
-//             message: "Failed to register user",
-//             error: (error as Error).message
-//         })
+//     sendResponse(res, {
+//       success: true,
+//       statusCode: httpStatus.CREATED,
+//       message: 'User registered successfully!',
+//       data: { user },
+//     });
+//   } catch (error) {
+//     console.log(error);
 
-//     }
-// }
+//     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+//       success: false,
+//       statusCode: httpStatus.INTERNAL_SERVER_ERROR,
+//       message: 'Failed to register user!',
+//       error: (error as Error).message,
+//     });
+//   }
+// };
 
+const registerUser = catchAsync(async (req: Request, res: Response) => {
+  const payload = req.body;
 
-const registerUser = catchAsync( async (req: Request, res: Response, next: NextFunction) => {
-    const payload = req.body;
+  const user = await userService.registerIntoDB(payload);
 
-    const user = await userService.registerUserIntoDB(payload);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: 'User registered successfully!',
+    data: { user },
+  });
+});
 
-    // res.status(httpStatus.CREATED).json({
-    //     success: true,
-    //     statusCode: httpStatus.CREATED,
-    //     message: "User registered successfully",
-    //     data: {
-    //         user
-    //     }
-    // });
+// GetUserProfile
+const getMyProfile = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    // const { accessToken } = req.cookies;
+    // console.log(req.user, 'User request');
 
-    sendResponse(res, {
-        success: true,
-        statusCode: httpStatus.CREATED,
-        message: "User registered successfully",
-        data: { user }
-    })
-})
+    // const verifiedToken = jwtUtils.verifyToken(
+    //   accessToken,
+    //   config.jwt_access_secret,
+    // );
 
-const getMyProfile = catchAsync( async (req: Request, res: Response, next: NextFunction) => {
-
-    // const {accessToken} = req.cookies;
-    // console.log(req.user, "user request");
-
-    // const verifiedToken = jwtUtils.verifyToken(accessToken, config.jwt_access_secret)
-
-    // if(typeof verifiedToken === "string"){
-    //     throw new Error(verifiedToken);
+    // if (typeof verifiedToken === 'string') {
+    //   throw new Error(verifiedToken);
     // }
 
-    const profile = await userService.getMyProfileFromDB(req.user?.id as string);
-
+    const profile = await userService.getMyProfileFromDB(
+      req.user?.id as string,
+    );
 
     sendResponse(res, {
-        success: true,
-        statusCode: httpStatus.OK,
-        message: "User profile fetched successfully",
-        data: { profile }
-    })
-})
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'User Profile found successfully!',
+      data: { profile },
+    });
+  },
+);
 
-const updateMyProfile = catchAsync( async (req: Request, res: Response, next: NextFunction) => {
+// UpdateMyProfile
+const updateMyProfile = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?.id as string;
 
     const payload = req.body;
 
-    const updatedProfile = await userService.updateMyProfileInDB(userId, payload);
+    const updatedProfile = await userService.updateMyProfileIntoDB(
+      userId,
+      payload,
+    );
 
     sendResponse(res, {
-        success: true,
-        statusCode: httpStatus.OK,
-        message: "User profile updated successfully",
-        data: { updatedProfile }
-    })
-})
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'User profile updated successfully!',
+      data: { updatedProfile },
+    });
+  },
+);
 
 export const userController = {
-    registerUser,
-    getMyProfile,
-    updateMyProfile
-}
+  registerUser,
+  getMyProfile,
+  updateMyProfile,
+};
